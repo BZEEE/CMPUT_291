@@ -1,0 +1,98 @@
+
+CreateTable Bookings(
+    bno INTEGER,
+    seats CHAR(11),
+    cost FLOAT,
+    email CHAR(20),
+    lcode CHAR(11),
+    rno INTEGER,
+    PRIMARY KEY (bno),
+    FOREIGN KEY (email)
+        REFERENCES Members,
+    FOREIGN KEY (lcode)
+        REFERENCES Locations,
+    FOREIGN KEY (rno)
+        REFERENCES Rides)
+    
+CreateTable Reviews(
+    rid CHAR(20),
+    rdate DATE,
+    rtext CHAR(20),
+    rscore INTEGER,
+    email CHAR(20),
+    rno INTEGER,
+    PRIMARY KEY (rid),
+    FOREIGN KEY (email)
+        REFERENCES Members,
+    FOREIGN KEY (rno)
+        REFERENCES Rides)
+  
+CreateTable Rides(
+    rno INTEGER,
+    price FLOAT,
+    rdate DATE,
+    seats CHAR(11),
+    lugDesc CHAR(20),
+    lcode CHAR(11),
+    email CHAR(20),
+    cno INTEGER,
+    PRIMARY KEY (rno),
+    FOREIGN KEY (lcode)
+        REFERENCES Locations,
+    FOREIGN KEY (email)
+        REFERENCES Members,
+    FOREIGN KEY (cno)
+        REFERENCES Cars)
+    
+CreateTable Cars(
+    cno INTEGER,
+    make CHAR(11),
+    model CHAR(11),
+    year INTEGER,
+    seats INTEGER,
+    email CHAR(20),
+    PRIMARY KEY (cno),
+    FOREIGN KEY (email)
+        REFERENCES Drivers)
+    
+CreateTable Locations(
+    lcode CHAR(11),
+    address CHAR(20),
+    prov CHAR(11),
+    city CHAR(20)
+    PRIMARY KEY (lcode))
+
+CreateTable enroute(
+    lcode CHAR(11),
+    rno INTEGER,
+    PRIMARY KEY (lcode,rno),
+    FOREIGN KEY (lcode)
+        REFERENCES Locations,
+    FOREIGN KEY (rno)
+        REFERENCES Rides,)
+    
+CreateTable Requests(
+    lcode CHAR(11),
+    email CHAR(20),
+    amount INTEGER,
+    qdate DATE,
+    PRIMARY KEY (lcode,email),
+    FOREIGN KEY (lcode)
+        REFERENCES Locations,
+    FOREIGN KEY (email)
+        REFERENCES Drivers)
+
+CreateTable Drivers(
+    licno INTEGER,
+    email CHAR(20),
+    PRIMARY KEY (email)
+    FOREIGN KEY (email)
+        REFERENCES Members
+	ON DELETE CASCADE)
+
+
+CreateTable Members(
+    email CHAR(20),
+    name Char(11),
+    phone INTEGER,
+    PRIMARY KEY (email))

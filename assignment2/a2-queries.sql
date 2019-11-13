@@ -1,0 +1,90 @@
+.echo on
+
+-- Question 1
+Select p.fname, p.lname, p.phone
+From persons AS p, vehicles As v, registrations As r
+Where 
+v.make = 'Chevrolet' And 
+v.model = 'Camaro' And 
+v.year = '1969' And 
+r.vin = v.vin And
+r.fname = p.fname And
+r.lname = p.lname
+
+-- Question 2
+Select b2.fname, b2.lname
+From births As b1, births As b2
+Where b2.fname != 'Michael' And b2.lname != 'Fox' And
+b1.fname = 'Michael' And b1.lname = 'Fox' And 
+(b1.f_fname = b2.f_fname And b1.f_lname = b2.f_lname) And (b1.m_fname = b2.m_fname And b1.m_lname = b2.m_lname)
+
+-- Question 3
+Select b4.fname, b4.lname
+From births AS b1, births As b2, births As b3, births As b4
+Where b1.fname = 'Michael' And b1.lname = 'Fox' And
+(b1.f_fname = b2.fname And b1.f_lname = b2.lname) And (b1.m_fname = b2.fname And b1.m_lname = b2.lname) And
+(b2.f_fname = b3.fname And b2.f_lname = b3.lname) And (b2.m_fname = b3.fname And b2.m_lname = b3.lname) And
+(b3.fname = b4.f_fname And b3.lname = b4.f_lname) And (b3.fname = b4.m_fname And b3.lname = b4.m_lname)
+
+-- Question 4
+Select fname, lname
+From persons
+Where bdate = (Select MIN(p.bdate)
+                From births As b, persons As p
+                where b.f_fname = 'Michael' And b.f_lname = 'Fox'
+                And b.fname = p.fname And b.lname = p.lname)
+
+-- Question 5
+Select p.fname, p.lname
+From persons As p
+Where 15 <= (Select SUM(d.points)                          -- count total demerit points
+            From demeritNotices As d
+            Where d.ddate >= date('now', '-2 years')       -- within the past two years
+                And p.fname = d.fname
+                And p.lname = d.lname)
+
+-- Question 6
+Select p2_fname, p2_lname, regdate
+From marriages
+Where p1_fname = 'Michael' And p1_lname = 'Fox'  -- all partner 2's of Michael Fox
+Union
+Select p1_fname, p1_lname, regdate
+From marriages
+Where p2_fname = 'Michael' And p2_lname = 'Fox'  -- all partner 1's of Michael Fox
+Order By regdate DESC
+Limit 1
+
+-- Question 7
+Select SUM(t.tno) / COUNT(r.regno), AVG(t.fine), MAX(t.fine)
+From vehicles AS v, registrations As r, tickets As t
+Group By v.color                             -- group cars by color
+Having r.expiry >= date('now', '+1 months')    -- does not expire at least for another month
+
+-- Question 8
+Select year, make, Count(make), color, Count(color) -- most frequent car make and model
+From vehicles                    
+Group By year
+Order By year
+
+-- Question 9
+CREATE VIEW personDetails(fname, lname, bdate, bplace, carsowned, ticketsRcvd)
+As Select p.fname, p.lname, p.bdate, p.bplace, COUNT(r.regno), COUNT(t.tno)
+From persons As p, registrations As r, tickets As t, vehicles As v
+Where r.vin = v.vin         -- vehicle is registered
+And r.fname = p.fname       -- registration matches first name
+And r.lname = p.lname       -- registration matches last name
+And r.regno = t.regno
+
+-- Question 10
+Select p.fname, p.lname, v.make, v.model
+From personDetails As p, vehicles As v, registrations As r
+Where p.fname = r.fname     -- first name sam as on the registration
+And p.lname = r.lname       -- last name same as on the registration
+And v.vin = r.vin           -- correct car for registration, needed to query the make and model
+And 3 <= (Select Count(tno)  -- has received at least 3 different tickets
+        From tickets As t
+        Where t.regno = r.regno)
+And Exists (Select Null
+            From tickets
+            Where violation Like "%red light%")     -- exists at least one red light violation
+

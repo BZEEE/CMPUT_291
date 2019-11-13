@@ -1,0 +1,12 @@
+Ivan Penales
+
+- Birth , partner, partner2 doesnt inherit person class.
+- records and notices should have a weak entity.
+- There should be one license and vehicle per driver.
+- vehicke registration shouldnt participate in teranary replationship with ticket and vehicle.
+
+Brandon zukowski
+
+- Falsely assumed that every vehicle has to be registered.
+- Falsely assumed that A driver cant have multiple driver's licenses.
+- Falsely assumed that  A person cant have multiple marriages with the same or different persons.
